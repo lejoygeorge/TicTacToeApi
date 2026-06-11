@@ -1,0 +1,110 @@
+openapi: 3.0.3
+info:
+  title: Tic-Tac-Toe API
+  description: A stateless REST API for playing a game of Tic-Tac-Toe.
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Game
+    description: Endpoints for initializing and playing Tic-Tac-Toe
+
+paths:
+  /api/tictactoe/init:
+    get:
+      tags:
+        - Game
+      summary: Initialize a new game
+      description: Returns a pristine board state and sets up the starting player (Player X).
+      operationId: initGame
+      responses:
+        '200':
+          description: Game successfully initialized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResponse'
+
+  /api/tictactoe/play:
+    post:
+      tags:
+        - Game
+      summary: Make a move
+      description: Submits a player's move. Validates the move, updates the board, and evaluates win/draw conditions.
+      operationId: playMove
+      requestBody:
+        description: The current game state and the player's intended move
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameRequest'
+      responses:
+        '200':
+          description: Move accepted and applied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResponse'
+        '400':
+          description: Invalid move (e.g., position taken, out of bounds, wrong player)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResponse'
+
+components:
+  schemas:
+    GameRequest:
+      type: object
+      required:
+        - board
+        - currentPlayer
+        - position
+      properties:
+        board:
+          type: array
+          description: A 1D array representing the 3x3 tic-tac-toe board.
+          items:
+            type: string
+            maxLength: 1
+          minItems: 9
+          maxItems: 9
+        currentPlayer:
+          type: string
+          description: The player making the move ('X' or 'O').
+          enum: [X, O]
+        position:
+          type: integer
+          description: The index (0-8) on the board where the player wants to place their mark.
+          minimum: 0
+          maximum: 8
+
+    GameResponse:
+      type: object
+      properties:
+        board:
+          type: array
+          description: The updated 1D array representing the board state.
+          items:
+            type: string
+            maxLength: 1
+        nextPlayer:
+          type: string
+          description: The player who should make the next move. Returns '-' if the game is over.
+          enum: [X, O, '-']
+        status:
+          type: string
+          description: The current status of the game logic engine.
+          enum:
+            - IN_PROGRESS
+            - GAME_OVER_WIN
+            - GAME_OVER_DRAW
+            - INVALID_MOVE
+        message:
+          type: string
+          description: A human-readable message detailing what just happened.
