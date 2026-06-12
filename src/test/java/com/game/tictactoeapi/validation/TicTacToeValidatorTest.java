@@ -6,6 +6,8 @@ import com.game.tictactoeapi.model.GameRequest.CurrentPlayerEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,33 +95,15 @@ class TicTacToeValidatorTest {
 
     // Target Spot Validation Tests
 
-    @Test
-    @DisplayName("validate: Should throw exception when the targeted spot is already taken by 'X'")
-    void validate_shouldThrowException_whenPositionIsTakenByX() {
-        validRequest.getBoard().set(4, "X");
+    @ParameterizedTest(name = "validate: Should throw exception when spot is taken by ''{0}''")
+    @ValueSource(strings = {"X", "O", "x", "o"})
+    @DisplayName("validate: Should throw exception when the targeted spot is already taken")
+    void validate_shouldThrowException_whenPositionIsTaken(String takenToken) {
+        validRequest.getBoard().set(4, takenToken);
         validRequest.setPosition(4);
         InvalidMoveException exception = assertThrows(InvalidMoveException.class,
                 () -> validator.validate(validRequest));
-        assertEquals("Position already taken! Choose an empty spot.", exception.getMessage());
-    }
 
-    @Test
-    @DisplayName("validate: Should throw exception when the targeted spot is already taken by 'O'")
-    void validate_shouldThrowException_whenPositionIsTakenByO() {
-        validRequest.getBoard().set(4, "O");
-        validRequest.setPosition(4);
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class,
-                () -> validator.validate(validRequest));
-        assertEquals("Position already taken! Choose an empty spot.", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("validate: Should safely evaluate and throw exception even if the taken spot is lowercase 'x' or 'o'")
-    void validate_shouldThrowException_whenPositionIsTakenByLowercase() {
-        validRequest.getBoard().set(4, "x");
-        validRequest.setPosition(4);
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class,
-                () -> validator.validate(validRequest));
         assertEquals("Position already taken! Choose an empty spot.", exception.getMessage());
     }
 
