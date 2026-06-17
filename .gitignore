@@ -44,3 +44,4 @@ mvnw
 
 # Ignore specific folder
 .mvn/
+.DS_Store/

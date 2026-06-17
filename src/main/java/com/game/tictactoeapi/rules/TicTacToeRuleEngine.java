@@ -3,23 +3,38 @@ package com.game.tictactoeapi.rules;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Component
 public class TicTacToeRuleEngine implements GameRuleEngine {
+    
+    private static final int BOARD_SIZE = 3;
+    
+    private static final int[][] WIN_COMBINATIONS = generateWinCombinations(BOARD_SIZE);
+    
+    private static int[][] generateWinCombinations(int n) {
+        var rows = IntStream.range(0, n)
+                .mapToObj(i -> IntStream.range(0, n).map(j -> i * n + j).toArray());
 
-    private static final int[][] WIN_COMBINATIONS = {
-            {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, // Horizontal
-            {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, // Vertical
-            {0, 4, 8}, {2, 4, 6}             // Diagonal
-    };
+        var columns = IntStream.range(0, n)
+                .mapToObj(j -> IntStream.range(0, n).map(i -> i * n + j).toArray());
+
+        var diagonals = Stream.of(
+                IntStream.range(0, n).map(i -> i * n + i).toArray(),          
+                IntStream.range(0, n).map(i -> i * n + (n - 1 - i)).toArray());
+        
+        return Stream.concat(Stream.concat(rows, columns), diagonals).toArray(int[][]::new);
+    }
 
     @Override
     public boolean isWinner(char[] board) {
         return Arrays.stream(WIN_COMBINATIONS).anyMatch(combo -> {
             var first = board[combo[0]];
-            return (first == 'X' || first == 'O')
-                    && first == board[combo[1]]
-                    && first == board[combo[2]];
+            if (first != 'X' && first != 'O') {
+                return false;
+            }
+            return Arrays.stream(combo).allMatch(index -> board[index] == first);
         });
     }
 

@@ -7,8 +7,9 @@ A highly optimized, stateless REST API for playing Tic-Tac-Toe. Built with **Jav
 ## 🚀 Features
 
 * **Stateless Architecture:** The server does not maintain session state. The entire game board is passed in the request and response, allowing the API to handle thousands of concurrent games effortlessly.
+* **Dynamic N x N Scalability:** The rule engine mathematically generates winning combinations at startup, allowing the game to dynamically support custom board sizes (e.g., 3x3, 4x4, 5x5) without changing core logic.
 * **API-Design-First:** Built using OpenAPI 3.0 specifications. Data models and API interfaces are auto-generated at compile time.
-* **SOLID Design:** Clean separation of concerns with dedicated components for validation, game rules, and orchestration.
+* **Extensible Validation (Rules Pattern):** Validation is decoupled into highly specific, single-responsibility rules (Strategy Pattern) orchestrated by a central validator, ensuring absolute adherence to the Open/Closed Principle.
 * **Java 17 Optimized:** Utilizes modern Java features such as `var`, `String.formatted()`, immutable collections (`List.of`), and functional streams.
 * **Interactive Documentation:** Out-of-the-box Swagger UI for easy API exploration and testing.
 
@@ -33,8 +34,8 @@ The application is structured to decouple routing, validation, and business logi
 1. **API/Models (Generated):** `api-spec.yaml` drives the automatic generation of DTOs and Controller interfaces.
 2. **Controller (`TicTacToeController`):** Implements the generated interface and acts as the entry point for HTTP requests.
 3. **Service (`TicTacToeServiceImpl`):** The orchestrator that coordinates validation, state updates, and rule evaluation.
-4. **Validator (`TicTacToeValidator`):** Handles business-level validation (e.g., ensuring a spot isn't already taken).
-5. **Rule Engine (`TicTacToeRuleEngine`):** Evaluates the board array to check for wins, draws, and determines the next player.
+4. **Validation Engine (`GameValidationRule`):** Utilizes the Rules Pattern. A central orchestrator (`TicTacToeValidator`) sequentially routes requests through specific, isolated rules (e.g., `BoardStateRule`, `PlayerRule`, `BoundsAndAvailabilityRule`).
+5. **Rule Engine (`TicTacToeRuleEngine`):** Dynamically evaluates the board array to check for wins, draws, and determines the next player using Java Streams.
 
 ---
 
@@ -47,7 +48,7 @@ The application is structured to decouple routing, validation, and business logi
 ### Installation & Execution
 
 1. **Clone the repository:**
-   ```bash
+    ```bash
    git clone [https://github.com/yourusername/tictactoe-api.git](https://github.com/yourusername/tictactoe-api.git)
    cd tictactoe-api
 
@@ -138,7 +139,7 @@ Submits a player's move. Validates the move, updates the board, and evaluates wi
 
 ## 🧪 Testing & Code Coverage
 
-This project uses JaCoCo to ensure high code coverage. The generated models (`com.bookorder.discountcalculator.model.`) are excluded from the coverage report to ensure metrics strictly reflect business and controller logic.
+This project uses JaCoCo to ensure high code coverage. The generated models (`com.game.tictactoeapi.model.*`) are excluded from the coverage report to ensure metrics strictly reflect business and controller logic.
 
 To run the unit tests and generate the coverage report:
 
