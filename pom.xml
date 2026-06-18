@@ -161,6 +161,7 @@
 					<excludes>
 						<exclude>com/game/tictactoeapi/model/**/*</exclude>
 						<exclude>com/game/tictactoeapi/api/**/*</exclude>
+						<exclude>com/game/tictactoeapi/TictactoeapiApplication.class</exclude>
 					</excludes>
 				</configuration>
 				<executions>

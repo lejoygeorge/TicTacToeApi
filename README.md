@@ -166,4 +166,4 @@ View the mutation coverage report to see killed and survived mutants by opening:
 `target/pit-reports/index.html` in your web browser.
 ---
 
-*Developed by Lejoy George*
+*Developed by Lejoy George *
