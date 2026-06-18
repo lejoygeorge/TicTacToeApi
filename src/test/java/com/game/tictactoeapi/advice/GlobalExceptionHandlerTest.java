@@ -1,6 +1,6 @@
 package com.game.tictactoeapi.advice;
 
-import com.game.tictactoeapi.exception.InvalidMoveException;
+import com.game.tictactoeapi.exception.TicTacToeException;
 import com.game.tictactoeapi.model.GameRequest;
 import com.game.tictactoeapi.model.GameResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,10 @@ class GlobalExceptionHandlerTest {
     @DisplayName("Should return 400 Bad Request with custom payload when InvalidMoveException is thrown")
     void handleInvalidMoveException_shouldReturn400_withCustomPayload() {
         String errorMessage = "Position already taken! Choose an empty spot.";
-        InvalidMoveException exception = new InvalidMoveException(errorMessage, standardRequest);
+        TicTacToeException exception = TicTacToeException.builder()
+                .message(errorMessage)
+                .request(standardRequest)
+                .build();
         ResponseEntity<GameResponse> responseEntity = exceptionHandler.handleInvalidMoveException(exception);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "HTTP Status should be 400 BAD REQUEST");
         GameResponse body = responseEntity.getBody();
@@ -48,7 +51,10 @@ class GlobalExceptionHandlerTest {
     @DisplayName("Should gracefully handle fallback player mapping when currentPlayer is null in bad requests")
     void handleInvalidMoveException_shouldHandleNullPlayerInFallback() {
         standardRequest.setCurrentPlayer(null);
-        InvalidMoveException exception = new InvalidMoveException("Invalid player.", standardRequest);
+        TicTacToeException exception = TicTacToeException.builder()
+                .message("Invalid player.")
+                .request(standardRequest)
+                .build();
         ResponseEntity<GameResponse> responseEntity = exceptionHandler.handleInvalidMoveException(exception);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         GameResponse body = responseEntity.getBody();
@@ -60,10 +66,13 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("Should fallback gracefully if the exception is thrown without the GameRequest context")
     void handleInvalidMoveException_shouldHandleMissingRequestContext() {
-        InvalidMoveException exception = new InvalidMoveException("Unknown error.");
+        TicTacToeException exception = TicTacToeException.builder()
+                .message("Unknown error.")
+                .build();
         ResponseEntity<GameResponse> responseEntity = exceptionHandler.handleInvalidMoveException(exception);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
         assertEquals(GameResponse.NextPlayerEnum.MINUS, responseEntity.getBody().getNextPlayer());
+        assertEquals("Unknown error.", responseEntity.getBody().getMessage());
     }
 }

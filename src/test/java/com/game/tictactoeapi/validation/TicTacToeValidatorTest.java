@@ -1,6 +1,6 @@
 package com.game.tictactoeapi.validation;
 
-import com.game.tictactoeapi.exception.InvalidMoveException;
+import com.game.tictactoeapi.exception.TicTacToeException;
 import com.game.tictactoeapi.model.GameRequest;
 import com.game.tictactoeapi.validation.rules.GameValidationRule;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,9 +58,11 @@ class TicTacToeValidatorTest {
         List<GameValidationRule> rules = Arrays.asList(rule1, rule2, rule3);
         TicTacToeValidator validator = new TicTacToeValidator(rules);
 
-        doThrow(new InvalidMoveException("Rule 2 violated!")).when(rule2).validate(dummyRequest);
+        doThrow( TicTacToeException.builder()
+                .message("Rule 2 violated!")
+                .build()).when(rule2).validate(dummyRequest);
 
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class,
+        TicTacToeException exception = assertThrows(TicTacToeException.class,
                 () -> validator.validate(dummyRequest));
 
         assertEquals("Rule 2 violated!", exception.getMessage());

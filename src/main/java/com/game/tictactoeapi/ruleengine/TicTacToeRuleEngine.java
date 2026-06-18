@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import java.util.regex.Pattern;
 
-import static com.game.tictactoeapi.constants.TicTacToeConstants.MININDEX;
+import static com.game.tictactoeapi.constants.TicTacToeConstants.MIN_INDEX;
 
 @Component
 public class TicTacToeRuleEngine implements GameRuleEngine {
@@ -24,13 +24,13 @@ public class TicTacToeRuleEngine implements GameRuleEngine {
     }
 
     private int[][] generateWinCombinations(int boardSize) {
-        var rows = IntStream.range(MININDEX, boardSize)
-                .mapToObj(i -> IntStream.range(MININDEX, boardSize).map(j -> i * boardSize + j).toArray());
-        var columns = IntStream.range(MININDEX, boardSize)
-                .mapToObj(j -> IntStream.range(MININDEX, boardSize).map(i -> i * boardSize + j).toArray());
+        var rows = IntStream.range(MIN_INDEX, boardSize)
+                .mapToObj(i -> IntStream.range(MIN_INDEX, boardSize).map(j -> i * boardSize + j).toArray());
+        var columns = IntStream.range(MIN_INDEX, boardSize)
+                .mapToObj(j -> IntStream.range(MIN_INDEX, boardSize).map(i -> i * boardSize + j).toArray());
         var diagonals = Stream.of(
-                IntStream.range(MININDEX, boardSize).map(i -> i * boardSize + i).toArray(),
-                IntStream.range(MININDEX, boardSize).map(i -> i * boardSize + (boardSize - 1 - i)).toArray()
+                IntStream.range(MIN_INDEX, boardSize).map(i -> i * boardSize + i).toArray(),
+                IntStream.range(MIN_INDEX, boardSize).map(i -> i * boardSize + (boardSize - 1 - i)).toArray()
         );
         return Stream.concat(Stream.concat(rows, columns), diagonals).toArray(int[][]::new);
     }
@@ -40,7 +40,7 @@ public class TicTacToeRuleEngine implements GameRuleEngine {
         int n = (int) Math.sqrt(board.length);
         int[][] combinations = getWinCombinations(n);
         return Arrays.stream(combinations).anyMatch(combo -> {
-            var first = board[combo[MININDEX]];
+            var first = board[combo[MIN_INDEX]];
             if (first != 'X' && first != 'O') {
                 return false;
             }

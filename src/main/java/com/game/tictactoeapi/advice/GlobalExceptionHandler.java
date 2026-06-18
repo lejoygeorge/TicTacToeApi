@@ -1,6 +1,6 @@
 package com.game.tictactoeapi.advice;
 
-import com.game.tictactoeapi.exception.InvalidMoveException;
+import com.game.tictactoeapi.exception.TicTacToeException;
 import com.game.tictactoeapi.model.GameResponse;
 import com.game.tictactoeapi.model.GameRequest;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +12,8 @@ import java.util.Optional;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidMoveException.class)
-    public ResponseEntity<GameResponse> handleInvalidMoveException(InvalidMoveException ex) {
+    @ExceptionHandler(TicTacToeException.class)
+    public ResponseEntity<GameResponse> handleInvalidMoveException(TicTacToeException ex) {
         GameResponse errorResponse = new GameResponse();
         GameRequest request = ex.getGameRequest();
         if (request != null) {

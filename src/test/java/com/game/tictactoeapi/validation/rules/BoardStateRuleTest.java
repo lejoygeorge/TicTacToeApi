@@ -1,6 +1,6 @@
 package com.game.tictactoeapi.validation.rules;
 
-import com.game.tictactoeapi.exception.InvalidMoveException;
+import com.game.tictactoeapi.exception.TicTacToeException;
 import com.game.tictactoeapi.model.GameRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +40,7 @@ class BoardStateRuleTest {
     @DisplayName("Should throw exception when the board is null")
     void validate_shouldThrowException_whenBoardIsNull() {
         request.setBoard(null);
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class, () -> rule.validate(request));
+        TicTacToeException exception = assertThrows(TicTacToeException.class, () -> rule.validate(request));
         assertEquals("Invalid board state. Board cannot be null.", exception.getMessage());
     }
 
@@ -48,7 +48,7 @@ class BoardStateRuleTest {
     @DisplayName("Should throw exception when board size is less than 9 (e.g., a 2x2 grid)")
     void validate_shouldThrowException_whenBoardIsTooSmall() {
         request.setBoard(Arrays.asList(new String[4]));
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class, () -> rule.validate(request));
+        TicTacToeException exception = assertThrows(TicTacToeException.class, () -> rule.validate(request));
         assertEquals("Invalid board state. Array size must be a perfect square (e.g., 9, 16).", exception.getMessage());
     }
 
@@ -56,7 +56,7 @@ class BoardStateRuleTest {
     @DisplayName("Should throw exception when board size is not a perfect square (e.g., 10 spots)")
     void validate_shouldThrowException_whenBoardIsNotPerfectSquare() {
         request.setBoard(Arrays.asList(new String[10]));
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class, () -> rule.validate(request));
+        TicTacToeException exception = assertThrows(TicTacToeException.class, () -> rule.validate(request));
         assertEquals("Invalid board state. Array size must be a perfect square (e.g., 9, 16).", exception.getMessage());
     }
 }

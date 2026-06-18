@@ -1,6 +1,6 @@
 package com.game.tictactoeapi.validation.rules;
 
-import com.game.tictactoeapi.exception.InvalidMoveException;
+import com.game.tictactoeapi.exception.TicTacToeException;
 import com.game.tictactoeapi.model.GameRequest;
 import com.game.tictactoeapi.model.GameRequest.CurrentPlayerEnum;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ class PlayerRuleTest {
     @DisplayName("Should throw exception when the current player is null")
     void validate_shouldThrowException_whenPlayerIsNull() {
         request.setCurrentPlayer(null);
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class, () -> rule.validate(request));
+        TicTacToeException exception = assertThrows(TicTacToeException.class, () -> rule.validate(request));
         assertEquals("Invalid player. Must be 'X' or 'O'.", exception.getMessage());
     }
 }

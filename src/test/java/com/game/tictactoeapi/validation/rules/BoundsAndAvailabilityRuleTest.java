@@ -1,6 +1,6 @@
 package com.game.tictactoeapi.validation.rules;
 
-import com.game.tictactoeapi.exception.InvalidMoveException;
+import com.game.tictactoeapi.exception.TicTacToeException;
 import com.game.tictactoeapi.model.GameRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +47,7 @@ class BoundsAndAvailabilityRuleTest {
     void validate_shouldThrowException_whenPositionIsNegative() {
         validRequest.setPosition(-1);
 
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class, () -> rule.validate(validRequest));
+        TicTacToeException exception = assertThrows(TicTacToeException.class, () -> rule.validate(validRequest));
         assertEquals("Out of bounds! Please choose a position between 0 and 8.", exception.getMessage());
     }
 
@@ -57,7 +57,7 @@ class BoundsAndAvailabilityRuleTest {
         validRequest.setBoard(Arrays.asList(new String[16]));
         validRequest.setPosition(16);
 
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class, () -> rule.validate(validRequest));
+        TicTacToeException exception = assertThrows(TicTacToeException.class, () -> rule.validate(validRequest));
         assertEquals("Out of bounds! Please choose a position between 0 and 15.", exception.getMessage());
     }
 
@@ -68,7 +68,7 @@ class BoundsAndAvailabilityRuleTest {
         validRequest.getBoard().set(4, takenToken);
         validRequest.setPosition(4);
 
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class, () -> rule.validate(validRequest));
+        TicTacToeException exception = assertThrows(TicTacToeException.class, () -> rule.validate(validRequest));
         assertEquals("Position already taken! Choose an empty spot.", exception.getMessage());
     }
 

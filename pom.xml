@@ -148,6 +148,11 @@
 							<additionalProperties>
 								<skipDefaultInterface>false</skipDefaultInterface>
 								<skipDefaultMethods>true</skipDefaultMethods>
+								<additionalModelTypeAnnotations>
+									@lombok.Builder
+									@lombok.NoArgsConstructor
+									@lombok.AllArgsConstructor
+								</additionalModelTypeAnnotations>
 							</additionalProperties>
 						</configuration>
 					</execution>

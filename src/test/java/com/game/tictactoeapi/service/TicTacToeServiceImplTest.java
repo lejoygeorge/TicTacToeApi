@@ -1,6 +1,7 @@
 package com.game.tictactoeapi.service;
 
-import com.game.tictactoeapi.exception.InvalidMoveException;
+import com.game.tictactoeapi.exception.TicTacToeException;
+import com.game.tictactoeapi.factory.GameResponseFactory;
 import com.game.tictactoeapi.model.GameRequest;
 import com.game.tictactoeapi.model.GameResponse;
 import com.game.tictactoeapi.ruleengine.GameRuleEngine;
@@ -25,16 +26,11 @@ import static org.mockito.Mockito.*;
 @DisplayName("Tic-Tac-Toe Service Orchestration Specifications")
 class TicTacToeServiceImplTest {
 
-    @Mock
     private GameValidator validator;
-
-    @Mock
     private GameRuleEngine ruleEngine;
-
-    @InjectMocks
     private TicTacToeServiceImpl gameService;
-
     private GameRequest standardRequest;
+    private GameResponseFactory responseFactory;
 
     @BeforeEach
     void setUp() {
@@ -42,6 +38,11 @@ class TicTacToeServiceImplTest {
         standardRequest.setBoard(new ArrayList<>(Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8")));
         standardRequest.setCurrentPlayer(GameRequest.CurrentPlayerEnum.X);
         standardRequest.setPosition(4);
+
+        validator = mock(GameValidator.class);
+        ruleEngine = mock(GameRuleEngine.class);
+        responseFactory = new GameResponseFactory();
+        gameService = new TicTacToeServiceImpl(validator, ruleEngine, responseFactory);
     }
 
     @Test
@@ -88,9 +89,10 @@ class TicTacToeServiceImplTest {
     @Test
     @DisplayName("playMove: Should call the validator first and throw exception if invalid")
     void playMove_shouldThrowException_whenValidatorFails() {
-        doThrow(new InvalidMoveException("Validation failed"))
-                .when(validator).validate(standardRequest);
-        InvalidMoveException exception = assertThrows(InvalidMoveException.class,
+        doThrow(TicTacToeException.builder()
+                .message("Validation failed")
+                .build()).when(validator).validate(standardRequest);
+        TicTacToeException exception = assertThrows(TicTacToeException.class,
                 () -> gameService.playMove(standardRequest));
         assertEquals("Validation failed", exception.getMessage());
         verify(ruleEngine, never()).isWinner(any());

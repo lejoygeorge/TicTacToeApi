@@ -1,17 +1,17 @@
 package com.game.tictactoeapi.service;
 
+import com.game.tictactoeapi.factory.GameResponseFactory;
 import com.game.tictactoeapi.model.GameRequest;
 import com.game.tictactoeapi.model.GameResponse;
-
 import com.game.tictactoeapi.ruleengine.GameRuleEngine;
 import com.game.tictactoeapi.validation.GameValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;import java.util.stream.IntStream;
+import java.util.List;
+import java.util.stream.IntStream;
 
-import static com.game.tictactoeapi.constants.TicTacToeConstants.DEFAULTBOARDSIZE;
-import static com.game.tictactoeapi.constants.TicTacToeConstants.MININDEX;
+import static com.game.tictactoeapi.constants.TicTacToeConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -19,51 +19,74 @@ public class TicTacToeServiceImpl implements GameService {
 
     private final GameValidator validator;
     private final GameRuleEngine ruleEngine;
+    private final GameResponseFactory responseFactory;
 
     @Override
     public GameResponse initializeGame(Integer size) {
-        int boardSize = (size != null && size >= DEFAULTBOARDSIZE) ? size : DEFAULTBOARDSIZE;
+        int boardSize = (size != null && size >= DEFAULT_BOARD_SIZE) ? size : DEFAULT_BOARD_SIZE;
         int totalSpots = boardSize * boardSize;
 
-        List<String> initialBoard = IntStream.range(MININDEX, totalSpots)
+        List<String> initialBoard = IntStream.range(MIN_INDEX, totalSpots)
                 .mapToObj(String::valueOf)
                 .toList();
 
-        return new GameResponse()
-                .board(initialBoard)
-                .nextPlayer(GameResponse.NextPlayerEnum.X)
-                .status(GameResponse.StatusEnum.IN_PROGRESS)
-                .message("Game initialized with a %dx%d board. Player X to move first.".formatted(boardSize, boardSize));
+        return responseFactory.create(
+                initialBoard,
+                GameResponse.StatusEnum.IN_PROGRESS,
+                GameResponse.NextPlayerEnum.X,
+                GAME_INIT_MESSAGE.formatted(boardSize, boardSize)
+        );
     }
 
     @Override
     public GameResponse playMove(GameRequest request) {
         validator.validate(request);
+
         var board = request.getBoard();
-        var currentPlayer = request.getCurrentPlayer().getValue();
-        var position = request.getPosition();
-        board.set(position, currentPlayer);
+        var currentPlayerStr = request.getCurrentPlayer().getValue();
+        var currentPlayerChar = currentPlayerStr.charAt(MIN_INDEX);
+
+        board.set(request.getPosition(), currentPlayerStr);
         char[] boardArray = String.join("", board).toCharArray();
+
         if (ruleEngine.isWinner(boardArray)) {
-            return new GameResponse()
-                    .board(board)
-                    .status(GameResponse.StatusEnum.GAME_OVER_WIN)
-                    .message("Player %s wins the game!".formatted(currentPlayer))
-                    .nextPlayer(GameResponse.NextPlayerEnum.MINUS);
+            return processWin(board, currentPlayerStr);
         }
+
         if (ruleEngine.isDraw(boardArray)) {
-            return new GameResponse()
-                    .board(board)
-                    .status(GameResponse.StatusEnum.GAME_OVER_DRAW)
-                    .message("The game is a Draw!")
-                    .nextPlayer(GameResponse.NextPlayerEnum.MINUS);
+            return processDraw(board);
         }
-        char nextChar = ruleEngine.determineNextPlayer(currentPlayer.charAt(MININDEX));
+
+        return processNextMove(board, currentPlayerChar);
+    }
+
+    private GameResponse processWin(List<String> board, String winningPlayer) {
+        return responseFactory.create(
+                board,
+                GameResponse.StatusEnum.GAME_OVER_WIN,
+                GameResponse.NextPlayerEnum.MINUS,
+                GAME_WIN_MESSAGE.formatted(winningPlayer)
+        );
+    }
+
+    private GameResponse processDraw(List<String> board) {
+        return responseFactory.create(
+                board,
+                GameResponse.StatusEnum.GAME_OVER_DRAW,
+                GameResponse.NextPlayerEnum.MINUS,
+                GAME_DRAW_MESSAGE
+        );
+    }
+
+    private GameResponse processNextMove(List<String> board, char currentPlayerChar) {
+        char nextChar = ruleEngine.determineNextPlayer(currentPlayerChar);
         var nextPlayerEnum = GameResponse.NextPlayerEnum.fromValue(String.valueOf(nextChar));
-        return new GameResponse()
-                .board(board)
-                .status(GameResponse.StatusEnum.IN_PROGRESS)
-                .message("Move accepted.")
-                .nextPlayer(nextPlayerEnum);
+
+        return responseFactory.create(
+                board,
+                GameResponse.StatusEnum.IN_PROGRESS,
+                nextPlayerEnum,
+                GAME_MOVE_ACCEPTED_MESSAGE
+        );
     }
 }
