@@ -3,7 +3,7 @@ package com.game.tictactoeapi.service;
 import com.game.tictactoeapi.exception.InvalidMoveException;
 import com.game.tictactoeapi.model.GameRequest;
 import com.game.tictactoeapi.model.GameResponse;
-import com.game.tictactoeapi.rules.GameRuleEngine;
+import com.game.tictactoeapi.ruleengine.GameRuleEngine;
 import com.game.tictactoeapi.validation.GameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,15 +45,44 @@ class TicTacToeServiceImplTest {
     }
 
     @Test
-    @DisplayName("initializeGame: Should return a pristine board and set X as the starting player")
-    void initializeGame_shouldReturnInitialState() {
-        GameResponse response = gameService.initializeGame();
+    @DisplayName("initializeGame: Should return a 3x3 board when size 3 is requested")
+    void initializeGame_shouldReturn3x3State_whenSizeIs3() {
+        GameResponse response = gameService.initializeGame(3);
         assertNotNull(response);
-        assertEquals(9, response.getBoard().size());
+        assertEquals(9, response.getBoard().size(), "3x3 board should have 9 spots");
         assertEquals(List.of("0", "1", "2", "3", "4", "5", "6", "7", "8"), response.getBoard());
         assertEquals(GameResponse.NextPlayerEnum.X, response.getNextPlayer());
         assertEquals(GameResponse.StatusEnum.IN_PROGRESS, response.getStatus());
-        assertEquals("Game initialized. Player X to move first.", response.getMessage());
+        assertEquals("Game initialized with a 3x3 board. Player X to move first.", response.getMessage());
+    }
+
+    @Test
+    @DisplayName("initializeGame: Should default to a 3x3 board if the requested size is null")
+    void initializeGame_shouldFallbackTo3x3_whenSizeIsNull() {
+        GameResponse response = gameService.initializeGame(null);
+        assertNotNull(response);
+        assertEquals(9, response.getBoard().size());
+        assertEquals("Game initialized with a 3x3 board. Player X to move first.", response.getMessage());
+    }
+
+
+    @Test
+    @DisplayName("initializeGame: Should dynamically generate a 4x4 board when size 4 is requested")
+    void initializeGame_shouldReturn4x4State_whenSizeIs4() {
+        GameResponse response = gameService.initializeGame(4);
+        assertNotNull(response);
+        assertEquals(16, response.getBoard().size(), "4x4 board should have 16 spots");
+        assertEquals("15", response.getBoard().get(15), "Last spot should be 15");
+        assertEquals("Game initialized with a 4x4 board. Player X to move first.", response.getMessage());
+    }
+
+    @Test
+    @DisplayName("initializeGame: Should default to a 3x3 board if the requested size is less than 3")
+    void initializeGame_shouldFallbackTo3x3_whenSizeIsLessThan3() {
+        GameResponse response = gameService.initializeGame(2);
+        assertNotNull(response);
+        assertEquals(9, response.getBoard().size(), "Board size should fall back to 9 spots (3x3)");
+        assertEquals("Game initialized with a 3x3 board. Player X to move first.", response.getMessage());
     }
 
     @Test

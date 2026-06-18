@@ -1,4 +1,4 @@
-package com.game.tictactoeapi.rules;
+package com.game.tictactoeapi.ruleengine;
 
 public interface GameRuleEngine {
     boolean isWinner(char[] board);

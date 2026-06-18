@@ -3,12 +3,15 @@ package com.game.tictactoeapi.service;
 import com.game.tictactoeapi.model.GameRequest;
 import com.game.tictactoeapi.model.GameResponse;
 
-import com.game.tictactoeapi.rules.GameRuleEngine;
+import com.game.tictactoeapi.ruleengine.GameRuleEngine;
 import com.game.tictactoeapi.validation.GameValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.List;import java.util.stream.IntStream;
+
+import static com.game.tictactoeapi.constants.TicTacToeConstants.DEFAULTBOARDSIZE;
+import static com.game.tictactoeapi.constants.TicTacToeConstants.MININDEX;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +21,19 @@ public class TicTacToeServiceImpl implements GameService {
     private final GameRuleEngine ruleEngine;
 
     @Override
-    public GameResponse initializeGame() {
+    public GameResponse initializeGame(Integer size) {
+        int boardSize = (size != null && size >= DEFAULTBOARDSIZE) ? size : DEFAULTBOARDSIZE;
+        int totalSpots = boardSize * boardSize;
+
+        List<String> initialBoard = IntStream.range(MININDEX, totalSpots)
+                .mapToObj(String::valueOf)
+                .toList();
+
         return new GameResponse()
-                .board(List.of("0", "1", "2", "3", "4", "5", "6", "7", "8"))
+                .board(initialBoard)
                 .nextPlayer(GameResponse.NextPlayerEnum.X)
                 .status(GameResponse.StatusEnum.IN_PROGRESS)
-                .message("Game initialized. Player X to move first.");
+                .message("Game initialized with a %dx%d board. Player X to move first.".formatted(boardSize, boardSize));
     }
 
     @Override
@@ -48,7 +58,7 @@ public class TicTacToeServiceImpl implements GameService {
                     .message("The game is a Draw!")
                     .nextPlayer(GameResponse.NextPlayerEnum.MINUS);
         }
-        char nextChar = ruleEngine.determineNextPlayer(currentPlayer.charAt(0));
+        char nextChar = ruleEngine.determineNextPlayer(currentPlayer.charAt(MININDEX));
         var nextPlayerEnum = GameResponse.NextPlayerEnum.fromValue(String.valueOf(nextChar));
         return new GameResponse()
                 .board(board)

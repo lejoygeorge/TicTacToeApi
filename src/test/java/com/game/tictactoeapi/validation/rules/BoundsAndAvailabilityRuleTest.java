@@ -34,6 +34,14 @@ class BoundsAndAvailabilityRuleTest {
         assertDoesNotThrow(() -> rule.validate(validRequest));
     }
 
+    @ParameterizedTest(name = "Should pass when the position is at boundary {0}")
+    @ValueSource(ints = {0, 8})
+    @DisplayName("Boundary Validation: Positions 0 and 8 should pass for 3x3 board")
+    void validate_shouldPass_whenPositionIsAtBoundary(int boundaryPosition) {
+        validRequest.setPosition(boundaryPosition);
+        assertDoesNotThrow(() -> rule.validate(validRequest));
+    }
+
     @Test
     @DisplayName("Should throw exception when the position is a negative number")
     void validate_shouldThrowException_whenPositionIsNegative() {

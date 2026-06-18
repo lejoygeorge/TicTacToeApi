@@ -1,4 +1,4 @@
-package com.game.tictactoeapi.rules;
+package com.game.tictactoeapi.ruleengine;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +30,20 @@ class TicTacToeRuleEngineTest {
     void isWinner_shouldReturnFalse_whenMatchingCharactersAreNotXOrO() {
         char[] board = {'1', '1', '1', '3', '4', '5', '6', '7', '8'};
         assertFalse(ruleEngine.isWinner(board), "Should not declare a win for non-player characters");
+    }
+
+    @Test
+    @DisplayName("isWinner: Should return false when there are player moves but no winning combination exists")
+    void isWinner_shouldReturnFalse_whenPlayerMovesButNoWin() {
+        char[] board = {'X', 'O', '2', '3', '4', '5', '6', '7', '8'};
+        assertFalse(ruleEngine.isWinner(board), "Board with partial non-winning moves should not have a winner");
+    }
+
+    @Test
+    @DisplayName("isWinner: Should return false when the board is full but has no winning combination (draw)")
+    void isWinner_shouldReturnFalse_whenBoardIsFullAndDraw() {
+        char[] board = {'X', 'O', 'X', 'O', 'X', 'O', 'O', 'X', 'O'};
+        assertFalse(ruleEngine.isWinner(board), "Full board with no matching combination should not have a winner");
     }
 
     @Test
