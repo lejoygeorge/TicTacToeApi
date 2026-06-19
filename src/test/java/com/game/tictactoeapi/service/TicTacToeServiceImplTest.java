@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +44,11 @@ class TicTacToeServiceImplTest {
         ruleEngine = mock(GameRuleEngine.class);
         responseFactory = new GameResponseFactory();
         gameService = new TicTacToeServiceImpl(validator, ruleEngine, responseFactory);
+
+        ReflectionTestUtils.setField(gameService, "initMessage", "Game initialized with a %dx%d board. Player X to move first.");
+        ReflectionTestUtils.setField(gameService, "winMessage", "Player %s wins the game!");
+        ReflectionTestUtils.setField(gameService, "drawMessage", "The game is a Draw!");
+        ReflectionTestUtils.setField(gameService, "moveAcceptedMessage", "Move accepted.");
     }
 
     @Test

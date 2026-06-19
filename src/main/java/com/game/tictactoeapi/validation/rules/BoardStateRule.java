@@ -2,6 +2,7 @@ package com.game.tictactoeapi.validation.rules;
 
 import com.game.tictactoeapi.exception.TicTacToeException;
 import com.game.tictactoeapi.model.GameRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +14,17 @@ import static com.game.tictactoeapi.constants.TicTacToeConstants.*;
 @Order(1)
 public class BoardStateRule implements GameValidationRule {
 
+    @Value("${game.error.validation.board.null}")
+    private String boardNullMessage;
+
+    @Value("${game.error.validation.board.size}")
+    private String boardSizeMessage;
 
     @Override
     public void validate(GameRequest request) {
         if (Objects.isNull(request.getBoard())) {
             throw TicTacToeException.builder()
-                    .message(ERR_MSG_NULL_BOARD_STATE)
+                    .message(boardNullMessage)
                     .request(request)
                     .build();
         }
@@ -28,7 +34,7 @@ public class BoardStateRule implements GameValidationRule {
 
         if (boardSize * boardSize != totalSpots || totalSpots < DEFAULT_ARRAY_SIZE) {
             throw TicTacToeException.builder()
-                    .message(ERR_MSG_NON_SQUARE_BOARD)
+                    .message(boardSizeMessage)
                     .request(request)
                     .build();
         }

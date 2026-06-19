@@ -5,6 +5,7 @@ import com.game.tictactoeapi.model.GameRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 
@@ -20,6 +21,8 @@ class BoardStateRuleTest {
     void setUp() {
         rule = new BoardStateRule();
         request = new GameRequest();
+        ReflectionTestUtils.setField(rule, "boardNullMessage", "Invalid board state. Board cannot be null.");
+        ReflectionTestUtils.setField(rule, "boardSizeMessage", "Invalid board state. Array size must be a perfect square (e.g., 9, 16).");
     }
 
     @Test

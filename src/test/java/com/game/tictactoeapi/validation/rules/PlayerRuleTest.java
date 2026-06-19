@@ -6,6 +6,7 @@ import com.game.tictactoeapi.model.GameRequest.CurrentPlayerEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +20,8 @@ class PlayerRuleTest {
     void setUp() {
         rule = new PlayerRule();
         request = new GameRequest();
+        ReflectionTestUtils.setField(rule, "invalidPlayerMessage", "Invalid player. Must be 'X' or 'O'.");
+
     }
 
     @Test

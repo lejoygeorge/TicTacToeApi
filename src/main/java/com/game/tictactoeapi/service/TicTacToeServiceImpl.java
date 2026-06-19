@@ -6,6 +6,7 @@ import com.game.tictactoeapi.model.GameResponse;
 import com.game.tictactoeapi.ruleengine.GameRuleEngine;
 import com.game.tictactoeapi.validation.GameValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,18 @@ public class TicTacToeServiceImpl implements GameService {
     private final GameRuleEngine ruleEngine;
     private final GameResponseFactory responseFactory;
 
+    @Value("${game.init.message}")
+    private String initMessage;
+
+    @Value("${game.win.message}")
+    private String winMessage;
+
+    @Value("${game.draw.message}")
+    private String drawMessage;
+
+    @Value("${game.move.accepted.message}")
+    private String moveAcceptedMessage;
+
     @Override
     public GameResponse initializeGame(Integer size) {
         int boardSize = (size != null && size >= DEFAULT_BOARD_SIZE) ? size : DEFAULT_BOARD_SIZE;
@@ -34,7 +47,7 @@ public class TicTacToeServiceImpl implements GameService {
                 initialBoard,
                 GameResponse.StatusEnum.IN_PROGRESS,
                 GameResponse.NextPlayerEnum.X,
-                GAME_INIT_MESSAGE.formatted(boardSize, boardSize)
+                initMessage.formatted(boardSize, boardSize)
         );
     }
 
@@ -65,7 +78,7 @@ public class TicTacToeServiceImpl implements GameService {
                 board,
                 GameResponse.StatusEnum.GAME_OVER_WIN,
                 GameResponse.NextPlayerEnum.MINUS,
-                GAME_WIN_MESSAGE.formatted(winningPlayer)
+                winMessage.formatted(winningPlayer)
         );
     }
 
@@ -74,7 +87,7 @@ public class TicTacToeServiceImpl implements GameService {
                 board,
                 GameResponse.StatusEnum.GAME_OVER_DRAW,
                 GameResponse.NextPlayerEnum.MINUS,
-                GAME_DRAW_MESSAGE
+                drawMessage
         );
     }
 
@@ -86,7 +99,7 @@ public class TicTacToeServiceImpl implements GameService {
                 board,
                 GameResponse.StatusEnum.IN_PROGRESS,
                 nextPlayerEnum,
-                GAME_MOVE_ACCEPTED_MESSAGE
+                moveAcceptedMessage
         );
     }
 }

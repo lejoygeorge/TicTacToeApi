@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,8 @@ class BoundsAndAvailabilityRuleTest {
         validRequest = new GameRequest();
         validRequest.setBoard(new ArrayList<>(Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8")));
         validRequest.setPosition(4);
+        ReflectionTestUtils.setField(rule, "positionTakenMessage", "Position already taken! Choose an empty spot.");
+        ReflectionTestUtils.setField(rule, "outOfBoundMessage", "Out of bounds! Please choose a position between 0 and %d.");
     }
 
     @Test
